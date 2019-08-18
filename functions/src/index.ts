@@ -1,13 +1,15 @@
-import * as functions from 'firebase-functions';
+
+
+//import * as functions from 'firebase-functions';
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
 //
 
 // import the appropriate class
-//const functions = require('firebase-functions')
+const functions = require('firebase-functions')
 const { WebhookClient } = require('dialogflow-fulfillment');
-const { Card, Suggestion } = require("dialogflow-fulfillment");
+const { Suggestion } = require("dialogflow-fulfillment");
 
 
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest(
@@ -22,9 +24,8 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest(
         console.log("Dialogflow Request body: " + JSON.stringify(request.body));
 
         function welcome(agent) {
-            agent.add(`Good day! Welcome to the Westin Hotel`);
-            agent.add(new Suggestion('Custom booking'));
-            agent.add(new Suggestion('Show packages'));
+            agent.add(`Good day! Welcome to shopmart`);
+            agent.add(`What would you like to buy ?`);
         }
 
         function fallback(agent) {
@@ -32,28 +33,36 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest(
             agent.add(`I'm sorry, can you try again?`);
         }
 
-        function all(agent) {
 
+        function usb(agent) {
+            
+            if(agent.parameters.storage) {
+                const storage_usb:number = agent.parameters.storage;    
+            }else {
+                agent.add(`Select storage for usb, we've `);
+                agent.add(new Suggestion('16 GB'));
+                agent.add(new Suggestion('32 GB'));
+                agent.add(new Suggestion('64 GB'));
+            }
+            
+            if (agent.parameters.brand) {
+                const brand:string = agent.parameters.brand;
+                
+            }else {
+                agent.add(`Would you like any specific brand, we've `);
+                agent.add(new Suggestion('Samsung'));
+                agent.add(new Suggestion('Kingston'));
+            }
 
+            if(agent.parameters.price) {
+                let price:number = agent.parameters.price
+            }else {
+                agent.add(`Your budget?`);
+            }
 
-            agent.add(new Suggestion('Yes'));
-            agent.add(new Suggestion('No'));
+             const port:number = agent.parameters.port;
 
-
-
-            agent.add(
-                new Card({
-                    title: `Summer special`,
-                    imageUrl: `https://www.edenhotels.nl/media/images/shutterstock_1433028059.2e16d0ba.original.fill-1280x960.jpg`,
-                    text: ` 1 x overnight stay in a comfortable room \n
-                                Based on two persons`,
-                    buttonText: `See full Package`,
-                    buttonUrl: `https://www.themanorhotelamsterdam.com/en/packages/summer-package/?_ga=2.209328790.587124662.1564954816-1563133300.1564954816`,
-                })
-
-
-            );
-
+            agent.add(`storage ${storage_usb} ,brand ${brand} ,price ${price} and port ${port}` );
 
         }
 
@@ -64,7 +73,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest(
         //  intentMap('Intent Name', Function Name)
         intentMap.set("Default Welcome Intent", welcome);
         intentMap.set("Default Fallback Intent", fallback);
-        intentMap.set("everything", all);
+        intentMap.set("usb", usb);
 
         //intentMap.set("room pictures", show_images);
         _agent.handleRequest(intentMap);
